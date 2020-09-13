@@ -1,20 +1,20 @@
 import math
 
 
-def getClosestPoint(point: tuple, points_list: list):
+def getClosestPoint(point: tuple, points_dict: dict):
     min_d = float('inf')
     min_d_point = tuple()
 
-    if len(points_list) == 0:
-        raise RuntimeError('points_list is empty, can\'t be iterated.')
+    if len(points_dict) == 0:
+        raise RuntimeError('points_dict is empty, can\'t be iterated.')
 
-    for prev_point in points_list:
+    for prev_point, parent in points_dict.items():
         d_y = point[0] - prev_point[0]
         d_x = point[1] - prev_point[1]
         d_norm = math.sqrt(d_y*d_y + d_x*d_x)
         if d_norm < min_d:
             min_d = d_norm
-            min_d_point = prev_point
+            min_d_point = (prev_point[0], prev_point[1])
     return min_d_point, min_d
 
 
@@ -57,11 +57,22 @@ def getPath(start_point: tuple, end_point: tuple):
     return ret_list
 
 
-def testGetClosestPointList():
-    print("-------testGetClosestPointList-------")
-    points_list = [(1, 2), (4, 5), (9, 10)]
+def getUnblockedPath(path, bin_img):
+    index = 0
+    while index < len(path):
+        pt = path[index]
+        print(pt)
+        if bin_img[pt[0]][pt[1]] == 0:  # obstacle
+            return path[:index]
+        index += 1
+    return path
+
+
+def testGetClosestPoint():
+    print("-------testGetClosestPoint-------")
+    points_dict = {(1, 2): None, (4, 5): None, (9, 10): None}
     min_d_point, min_d = getClosestPoint(
-        (3, 2), points_list)  # 2, sqrt(10), further
+        (3, 2), points_dict)  # 2, sqrt(10), further
     if min_d_point == (1, 2):
         print("min_d_point test pass")
     else:
@@ -93,9 +104,8 @@ def testGetPath():
         print("path2 test pass")
     else:
         raise RuntimeError("path2 test false")
-        
 
 
 if __name__ == "__main__":
-    testGetClosestPointList()
+    testGetClosestPoint()
     testGetPath()
