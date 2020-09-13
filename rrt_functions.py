@@ -23,17 +23,19 @@ def getPath(start_point: tuple, end_point: tuple):
     if start_point == end_point:
         raise RuntimeError('get same start and endpoint')
 
-    x1 = start_point[0]
-    y1 = start_point[1]
-    x2 = end_point[0]
-    y2 = end_point[1]
+    y1 = start_point[0]
+    x1 = start_point[1]
+    y2 = end_point[0]
+    x2 = end_point[1]
 
     if x1 == x2:  # vertical line
+        print('vertical line')
         step = 1 if y1 < y2 else -1
-        return [(x1, v) for v in range(y1, y2 + step, step)]
+        return [(v, x1) for v in range(y1, y2 + step, step)]
     elif y1 == y2:  # horizontal line
+        print('hor line')
         step = 1 if x1 < x2 else -1
-        return [(v, y1) for v in range(x1, x2 + step, step)]
+        return [(y1, v) for v in range(x1, x2 + step, step)]
 
     m = (y2 - y1) / (x2 - x1)
     b = y1 - m * x1
@@ -48,12 +50,12 @@ def getPath(start_point: tuple, end_point: tuple):
         for x in range(x1, x2 + step, step):
             y = m * x + b
             y = int(math.floor(y + 0.5))
-            ret_list.append((x, y))
+            ret_list.append((y, x))
     else:
         for y in range(y1, y2 + step, step):
             x = (y - b) / m
             x = int(math.floor(x + 0.5))
-            ret_list.append((x, y))
+            ret_list.append((y, x))
     return ret_list
 
 
@@ -61,7 +63,6 @@ def getUnblockedPath(path, bin_img):
     index = 0
     while index < len(path):
         pt = path[index]
-        print(pt)
         if bin_img[pt[0]][pt[1]] == 0:  # obstacle
             return path[:index]
         index += 1

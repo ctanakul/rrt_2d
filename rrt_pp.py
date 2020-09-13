@@ -102,6 +102,10 @@ while True:
     # check if the path is blocked by the obstacle, if block, re-random
     # path = getPath(closest_point, next_point)
     # blocked_path, unblocked_path = isBlockedPath(path)
+
+    # closest_point = (10, 10)
+    # next_point = (10, 50)
+
     unblocked_path = rf.getUnblockedPath(rf.getPath(closest_point, next_point), BIN_IM)
     if len(unblocked_path) <= 1:  # edge case where the whole path except the first point, the closest part, is blocked
         print('whole path is blocked except the first point')
@@ -114,7 +118,7 @@ while True:
     # rf.savePoint(cur_pt=next_point, parent_p=closest_point)
     point_parent_dict.update({next_point : closest_point})
     # rf.drawLine(path, BGR_IM)  # draw
-    cv.line(BGR_IM, next_point, closest_point, (0, 0, 0))
+    cv.line(BGR_IM, (next_point[1], next_point[0]), (closest_point[1], closest_point[0]) , (0, 0, 0))
 
     # if next_point == end_point:
     #     cv.line(BGR_IM, next_point, closest_point, (0, 0, 255))
