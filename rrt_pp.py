@@ -5,9 +5,10 @@ import random
 import rrt_functions as rf
 
 IM_DIR = '/home/ctlattez/python_repos/logo_pathplanning/northwestern-n.jpg'
+# IM_DIR = '/home/ctlattez/python_repos/Path-Planning/spartan-helmet-og.png'
 
 BGR_IM = cv.imread(IM_DIR, cv.IMREAD_COLOR)  # BGR
-BGR_IM = cv.resize(BGR_IM, dsize = (180, 195))
+BGR_IM = cv.resize(BGR_IM, dsize = (750, 750))
 BIN_IM = cv.cvtColor(BGR_IM, cv.COLOR_BGR2GRAY)
 # keep track of obstacles and previously drawn lines
 cv.threshold(BIN_IM, 125, 255, cv.THRESH_BINARY, BIN_IM)
@@ -44,9 +45,10 @@ def markBinMap(point: tuple, mark_black: bool = True):
 
 
 def markBGRMap(point: tuple, bgr_color: list):
-    BGR_IM[point[0], point[1], 0] = bgr_color[0]
-    BGR_IM[point[0], point[1], 1] = bgr_color[1]
-    BGR_IM[point[0], point[1], 2] = bgr_color[2]
+    # BGR_IM[point[0], point[1], 0] = bgr_color[0]
+    # BGR_IM[point[0], point[1], 1] = bgr_color[1]
+    # BGR_IM[point[0], point[1], 2] = bgr_color[2]
+    BGR_IM[point[0], point[1]] = bgr_color
 
 
 BGR_YELLOW = [0, 255, 255]
@@ -54,32 +56,33 @@ BGR_RED = [0, 0, 255]
 BGR_BLACK = [0, 0, 0]
 
 
-END_POINT = (H - 10, W - 10)
-START_POINT = (10, 10)
+END_POINT = (H - 1, W - 1)
+START_POINT = (0, 0)
 # initialize different end_point and next_point
 # end_point = getAvailableRandomPoint()
 end_point = END_POINT
-markBinMap(end_point)
+# markBinMap(end_point)
 markBGRMap(START_POINT, BGR_RED)  # Yellow for endpoint
 markBGRMap(end_point, BGR_RED)  # Yellow for endpoint
-next_point = end_point  # init dummy next point
+next_point = START_POINT  # init dummy next point
 point_parent_dict = dict()
 
 
 # return a path: a list of tuples from start_point to end_point
 
 # RRT process
-ITER_MAX = 500
+ITER_MAX = 5000
 i = 0
+point_parent_dict.update({START_POINT: None})
 # while i < ITER_MAX:
 while True:
 
-    if i == 0:
-        # while next_point != end_point:
-        #     next_point = getAvailableRandomPoint()
-        # marked_points[next_point] = None  # None == no parent == starting point
-        next_point = START_POINT
-        point_parent_dict.update({next_point: None})
+    # if i == 0:
+    #     # while next_point != end_point:
+    #     #     next_point = getAvailableRandomPoint()
+    #     # marked_points[next_point] = None  # None == no parent == starting point
+    #     next_point = START_POINT
+    #     point_parent_dict.update({next_point: None})
 
     i += 1
 
@@ -125,12 +128,23 @@ while True:
     #     # drawFinalPath()
     #     break
 
+    # If the endpoint can be reached directly, then reach it
+    path_to_endpoint = rf.getPath(next_point, end_point)
+    if not rf.checkBlockedPath(path_to_endpoint, BIN_IM):
+        print('lenp_2_ep: ', len(path_to_endpoint))
+        # print('len: ', len(unblocked_path_to_endpoint))
+        print('SUCCESS')
+        cv.line(BGR_IM, (next_point[1], next_point[0]), (end_point[1], end_point[0]) , (0, 0, 255))
+        break 
+    print('-----------------')
     cv.imshow('win', BGR_IM)
-    cv.waitKey(0)
+    k = cv.waitKey(10)
+    if k == ord('q'):
+        break
     
 
 if i == ITER_MAX:
     print('could not get path within %d counts', ITER_MAX)
-
+print('final line: ', i)
 cv.imshow('win', BGR_IM)
-cv.waitKey(0)
+key = cv.waitKey(0)

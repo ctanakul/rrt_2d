@@ -29,11 +29,11 @@ def getPath(start_point: tuple, end_point: tuple):
     x2 = end_point[1]
 
     if x1 == x2:  # vertical line
-        print('vertical line')
+        # print('vertical line')
         step = 1 if y1 < y2 else -1
         return [(v, x1) for v in range(y1, y2 + step, step)]
     elif y1 == y2:  # horizontal line
-        print('hor line')
+        # print('hor line')
         step = 1 if x1 < x2 else -1
         return [(y1, v) for v in range(x1, x2 + step, step)]
 
@@ -57,6 +57,16 @@ def getPath(start_point: tuple, end_point: tuple):
             x = int(math.floor(x + 0.5))
             ret_list.append((y, x))
     return ret_list
+
+def checkBlockedPath(path, bin_img):
+    index = 0
+    while index < len(path):
+        pt = path[index]
+        print(pt)
+        if bin_img[pt[0]][pt[1]] == 0:  # obstacle
+            return True
+        index += 1
+    return False    
 
 
 def getUnblockedPath(path, bin_img):
