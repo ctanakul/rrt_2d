@@ -3,14 +3,15 @@ import cv2 as cv
 import math
 import random
 import rrt_functions as rf
+import argparse
 
 
-def run_rrt():
+def run_rrt(im_dir):
 
-    IM_DIR = '/home/ctlattez/python_repos/logo_pathplanning/northwestern-n.jpg'
+    # IM_DIR = '/home/ctlattez/python_repos/logo_pathplanning/northwestern-n.jpg'
     # IM_DIR = '/home/ctlattez/python_repos/Path-Planning/spartan-helmet-og.png'
 
-    BGR_IM = cv.imread(IM_DIR, cv.IMREAD_COLOR)  # BGR
+    BGR_IM = cv.imread(im_dir, cv.IMREAD_COLOR)  # BGR
     BGR_IM = cv.resize(BGR_IM, dsize=(750, 750))  # (width, height)
     BIN_IM = cv.cvtColor(BGR_IM, cv.COLOR_BGR2GRAY)
     # keep track of obstacles and previously drawn lines
@@ -104,7 +105,8 @@ def run_rrt():
         path_to_endpoint = rf.getPath(next_point, end_point)
         if not rf.checkBlockedPath(path_to_endpoint, BIN_IM):
             point_parent_dict.update({end_point: next_point})
-            rf.drawBackToPoint(point_parent_dict, end_point, START_POINT, tuple(BGR_RED), BGR_IM)
+            rf.drawBackToPoint(point_parent_dict, end_point,
+                               START_POINT, tuple(BGR_RED), BGR_IM)
             break
         print('-----------------')
         cv.imshow('win', BGR_IM)
@@ -119,9 +121,10 @@ def run_rrt():
     key = cv.waitKey(0)
 
 
-def main():
-    run_rrt()
-
-
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description='An RRT path planning educational tool with algorithmic customization capability.')
+    parser.add_argument(
+        '-i', '--image', default='/home/ctlattez/python_repos/logo_pathplanning/northwestern-n.jpg', help='background image directory')
+    args = parser.parse_args()
+    run_rrt(args.image)
