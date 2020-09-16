@@ -1,4 +1,5 @@
 import math
+import cv2 as cv
 
 
 def getClosestPoint(point: tuple, points_dict: dict):
@@ -58,15 +59,16 @@ def getPath(start_point: tuple, end_point: tuple):
             ret_list.append((y, x))
     return ret_list
 
+
 def checkBlockedPath(path, bin_img):
     index = 0
     while index < len(path):
         pt = path[index]
-        print(pt)
+        # print(pt)
         if bin_img[pt[0]][pt[1]] == 0:  # obstacle
             return True
         index += 1
-    return False    
+    return False
 
 
 def getUnblockedPath(path, bin_img):
@@ -77,6 +79,14 @@ def getUnblockedPath(path, bin_img):
             return path[:index]
         index += 1
     return path
+
+
+def drawBackToPoint(point_to_parent_dict: dict, p_a: tuple, p_b: tuple, color: tuple, img):
+    current_point = p_a
+    while (current_point != p_b):
+        parent = point_to_parent_dict[current_point]
+        cv.line(img, current_point[::-1], parent[::-1], color)
+        current_point = parent
 
 
 def testGetClosestPoint():
