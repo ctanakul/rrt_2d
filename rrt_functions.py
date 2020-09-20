@@ -2,6 +2,12 @@ import math
 import cv2 as cv
 
 
+def markBGRMap(point: tuple, bgr_color: list, bgr_image):
+    if (len(bgr_image.shape) != 3):
+        raise RuntimeError("bgr_image does not have shape of 3")
+    bgr_image[point[0], point[1]] = bgr_color
+
+
 def getClosestPoint(point: tuple, points_dict: dict):
     min_d = float('inf')
     min_d_point = tuple()
@@ -81,12 +87,26 @@ def getUnblockedPath(path, bin_img):
     return path
 
 
-def drawBackToPoint(point_to_parent_dict: dict, p_a: tuple, p_b: tuple, color: tuple, img, line_thickness: int = 1):
+def drawBackToPoint(point_to_parent_dict: dict, p_a: tuple, p_b: tuple, color: tuple, img, line_thickness: int = 1) -> int:
+    """
+    Returns:
+        int: inclusive number of points from p_a to p_b 
+    """
     current_point = p_a
+    point_num = 1
     while (current_point != p_b):
         parent = point_to_parent_dict[current_point]
-        cv.line(img, current_point[::-1], parent[::-1], color, thickness=line_thickness, lineType=8)
+        cv.circle(img, current_point[::-1], 3, (0, 125, 255), 3)
+        cv.line(img, current_point[::-1], parent[::-1],
+                color, thickness=line_thickness, lineType=8)
         current_point = parent
+        point_num += 1
+
+    # draw the last circle for current point     
+    if point_num > 1:
+        cv.circle(img, current_point[::-1], 3, (0, 125, 255), 3)
+    print('drawn line num: ', point_num - 1)
+    return point_num
 
 
 def testGetClosestPoint():
