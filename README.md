@@ -21,4 +21,5 @@ Pros
      - Create a window 
        - to show plot the total iteration of each run
        - to print out the average run number 
-     - 
+
+TO-DOS
