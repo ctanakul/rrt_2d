@@ -105,7 +105,6 @@ def drawBackToPoint(point_to_parent_dict: dict, p_a: tuple, p_b: tuple, color: t
     # draw the last circle for current point     
     if point_num > 1:
         cv.circle(img, current_point[::-1], 3, (0, 125, 255), 3)
-    print('drawn line num: ', point_num - 1)
     return point_num
 
 
