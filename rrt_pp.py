@@ -6,19 +6,16 @@ import rrt_functions as rf
 import argparse
 
 
-def run_rrt(im_dir):
-
-    # IM_DIR = '/home/ctlattez/python_repos/logo_pathplanning/northwestern-n.jpg'
-    # IM_DIR = '/home/ctlattez/python_repos/Path-Planning/spartan-helmet-og.png'
+def run_rrt(im_dir, resize_tuple):
 
     BGR_IM = cv.imread(im_dir, cv.IMREAD_COLOR)  # BGR
-    BGR_IM = cv.resize(BGR_IM, dsize=(750, 750))  # (width, height)
+    if resize_tuple != (-1, -1):
+        BGR_IM = cv.resize(BGR_IM, dsize=resize_tuple)  # (width, height)
     BIN_IM = cv.cvtColor(BGR_IM, cv.COLOR_BGR2GRAY)
     # keep track of obstacles and previously drawn lines
     cv.threshold(BIN_IM, 125, 255, cv.THRESH_BINARY, BIN_IM)
     cv.namedWindow('win', cv.WINDOW_NORMAL)
 
-    # dict : {point: {parents}}
     H, W = BIN_IM.shape
     print('Height - y: ', H, "Width - x: ", W)
     # CLIP_D = float(30)
@@ -49,10 +46,8 @@ def run_rrt(im_dir):
     # return a path: a list of tuples from start_point to end_point
 
     # RRT process
-    ITER_MAX = 5000
     i = 0
     point_parent_dict.update({START_POINT: None})
-    # while i < ITER_MAX:
     while True:
 
         # if i == 0:
@@ -99,14 +94,14 @@ def run_rrt(im_dir):
 
         point_parent_dict.update({next_point: closest_point})
         cv.line(BGR_IM, (next_point[1], next_point[0]),
-                (closest_point[1], closest_point[0]), (0, 0, 0))
+                (closest_point[1], closest_point[0]), (0, 0, 0), lineType=8)
 
         # If the endpoint can be reached directly, then reach it
         path_to_endpoint = rf.getPath(next_point, end_point)
         if not rf.checkBlockedPath(path_to_endpoint, BIN_IM):
             point_parent_dict.update({end_point: next_point})
             rf.drawBackToPoint(point_parent_dict, end_point,
-                               START_POINT, tuple(BGR_RED), BGR_IM)
+                               START_POINT, tuple(BGR_RED), BGR_IM, 3)
             break
         print('-----------------')
         cv.imshow('win', BGR_IM)
@@ -114,9 +109,6 @@ def run_rrt(im_dir):
         if k == ord('q'):
             break
 
-    if i == ITER_MAX:
-        print('could not get path within %d counts', ITER_MAX)
-    print('final line: ', i)
     cv.imshow('win', BGR_IM)
     key = cv.waitKey(0)
 
@@ -125,6 +117,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='An RRT path planning educational tool with algorithmic customization capability.')
     parser.add_argument(
-        '-i', '--image', default='/home/ctlattez/python_repos/logo_pathplanning/northwestern-n.jpg', help='background image directory')
+        '-i', '--image', default='/home/ctlattez/python_repos/logo_pathplanning/northwestern-n.jpg',
+        help='background image directory')
+    parser.add_argument('-r', '--resize', nargs=2, type=int, default=[-1, -1])
     args = parser.parse_args()
-    run_rrt(args.image)
+    resize_tuple = tuple(args.resize)
+    if resize_tuple[0] != -1 and (resize_tuple[0] < 0 or resize_tuple[1] < 0):
+        raise RuntimeError('resize_tuple[0] must be positive integer')
+    run_rrt(args.image, resize_tuple)

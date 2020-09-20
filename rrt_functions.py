@@ -81,11 +81,11 @@ def getUnblockedPath(path, bin_img):
     return path
 
 
-def drawBackToPoint(point_to_parent_dict: dict, p_a: tuple, p_b: tuple, color: tuple, img):
+def drawBackToPoint(point_to_parent_dict: dict, p_a: tuple, p_b: tuple, color: tuple, img, line_thickness: int = 1):
     current_point = p_a
     while (current_point != p_b):
         parent = point_to_parent_dict[current_point]
-        cv.line(img, current_point[::-1], parent[::-1], color)
+        cv.line(img, current_point[::-1], parent[::-1], color, thickness=line_thickness, lineType=8)
         current_point = parent
 
 
